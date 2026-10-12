@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- 告诉浏览器：这是中文页面，用 UTF-8 编码 -->
+  <meta charset="UTF-8">
+  <!-- 响应式的关键：手机上看时，让页面宽度=屏幕宽度，而不是缩小显示 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的个人网站</title>
+
+  <!-- 浏览器标签页小图标（favicon）：内联 SVG，深蓝圆 + 金色 F -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231a2d5a'/%3E%3Ctext x='16' y='22' font-size='16' fill='%23d4af37' text-anchor='middle' font-family='sans-serif' font-weight='bold'%3EF%3C/text%3E%3C/svg%3E">
+
+  <style>
+    /* ============ 1. 颜色变量 ============
+       以后想换配色，只改这里，全站一起变 */
+    :root {
+      --dark-blue: #1a2d5a;   /* 主色：深蓝 */
+      --dark-blue-2: #12203f; /* 更深一点的蓝（hover 用） */
+      --gold: #d4af37;        /* 点缀色：金色（和桌宠一致） */
+      --bg: #ffffff;          /* 页面背景：白 */
+      --bg-soft: #f5f7fb;     /* 浅灰蓝（交替区块背景） */
+      --text: #2b2f3a;        /* 正文颜色：深灰，比纯黑柔和 */
+    }
+
+    /* ============ 2. 基础重置 ============
+       * 表示"所有元素"。去掉默认边距，让样式从零开始，各浏览器显示一致 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box; /* 宽高包含内边距和边框，好计算 */
+    }
+
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      /* 上面是字体回退栈：电脑没有第一个就用第二个，都没有就用系统默认无衬线 */
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7; /* 行高 1.7 倍，文字不挤 */
+    }
+
+    /* ============ 3. 顶部导航 ============
+       position: sticky 让导航滚到顶部后"粘住"不消失 */
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--dark-blue);
+      display: flex;
+      justify-content: space-around; /* 4 个链接平均分布 */
+      padding: 14px 10px;
+      z-index: 10; /* 盖在别的元素上面 */
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none; /* 去掉链接默认下划线 */
+      font-size: 15px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: background 0.2s; /* 悬停时背景色平滑过渡 */
+    }
+
+    /* 鼠标悬停时：金色背景、深蓝字 */
+    nav a:hover {
+      background: var(--gold);
+      color: var(--dark-blue);
+    }
+
+    /* 当前所在页的链接：加金色下划线提示位置 */
+    nav a.active {
+      border-bottom: 2px solid var(--gold);
+    }
+
+    /* ============ 4. 页面区块 ============
+       每个"页面"是一个 <section>，默认隐藏；
+       JS 控制当前页显示（见文件底部 <script>） */
+    .page {
+      display: none;          /* 默认不显示 */
+      padding: 48px 20px;     /* 上下 48px，左右 20px，别贴边 */
+      min-height: 70vh;       /* 至少占屏幕 70% 高，footer 不会飘到中间 */
+    }
+    .page.active {
+      display: block;         /* JS 给当前页加 .active 类，才显示 */
+    }
+
+    /* 页面内容居中，最大宽 720px：电脑上不会拉得太宽不好读 */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;         /* 左右自动，实现水平居中 */
+    }
+
+    /* ============ 5. 首页（hero） ============ */
+    .hero {
+      text-align: center;     /* 文字居中 */
+      padding: 60px 0 40px;
+    }
+
+    /* 头像：先用 CSS 画一个圆形占位（灰色圆 + 名字首字）。
+       换成你自己的照片：把照片命名为 avatar.jpg 放进同目录，
+       然后删掉下面这个 div，换成：
+       <img class="avatar" src="avatar.jpg" alt="我的头像"> */
+    .avatar-placeholder {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      border-radius: 50%;               /* 圆形 */
+      background: var(--dark-blue);     /* 深蓝底 */
+      color: var(--gold);               /* 金色字 */
+      font-size: 48px;
+      font-weight: bold;
+      display: flex;                    /* 下面三行：让字母在圆里水平垂直居中 */
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      color: var(--dark-blue);
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 17px;
+      color: #5a6478;
+    }
+
+    /* ============ 6. 小标题 ============ */
+    .section-title {
+      font-size: 26px;
+      color: var(--dark-blue);
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 3px solid var(--gold); /* 标题下方一条金线 */
+      display: inline-block;                /* 金线只跟文字一样宽 */
+    }
+
+    /* 交替区块用浅灰蓝背景，页面有节奏感 */
+    .alt-bg {
+      background: var(--bg-soft);
+    }
+
+    /* ============ 7. 关于我 ============ */
+    .about-list {
+      list-style: none;       /* 去掉默认圆点 */
+      margin-top: 20px;
+    }
+    .about-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e9f0; /* 分隔线 */
+    }
+    .about-list b {
+      color: var(--dark-blue);
+      margin-right: 12px;
+    }
+
+    /* ============ 8. 作品卡片 ============ */
+    .card {
+      background: #fff;
+      border: 1px solid #e5e9f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(26, 45, 90, 0.06); /* 很淡的阴影 */
+    }
+    .card h3 {
+      color: var(--dark-blue);
+      margin-bottom: 6px;
+    }
+    .card p {
+      font-size: 14px;
+      color: #5a6478;
+    }
+
+    /* 作品截图占位：换成截图后改成 <img>，见卡片里的注释 */
+    .shot-placeholder {
+      height: 160px;
+      border-radius: 8px;
+      background: #eef1f7;
+      color: #8a94a8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    /* ============ 9. 联系 ============ */
+    .contact-links {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    .contact-links a {
+      color: var(--dark-blue);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;  /* 上下留间距 */
+      padding: 6px 0;
+    }
+    .contact-links a:hover {
+      color: var(--gold);     /* 悬停变金色 */
+    }
+
+    /* ============ 10. 页脚 ============ */
+    footer {
+      background: var(--dark-blue);
+      color: #c7d0e3;
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+    }
+
+    /* ============ 11. 响应式：电脑端增强 ============
+       "先手机，后电脑"：上面都是手机布局，这一段在屏幕 ≥768px 时生效 */
+    @media (min-width: 768px) {
+      .hero {
+        padding: 90px 0 60px;
+      }
+      .hero h1 {
+        font-size: 40px;
+      }
+      .page {
+        padding: 60px 24px;
+      }
+      .card p {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<!-- ==================== 下面开始是页面内容 ==================== -->
+<body>
+  <!-- 顶部导航：href="#home" 让地址栏带锚点（后退键也能用）；
+       onclick 直接调用 JS 切页（更直观，也兼容各种环境）。
+       想加新页面：复制一行，改 #名字 和 onclick 里的名字 -->
+  <nav>
+    <a href="#home" class="active" onclick="showPage('home')">首页</a>
+    <a href="#about" onclick="showPage('about')">关于我</a>
+    <a href="#works" onclick="showPage('works')">作品</a>
+    <a href="#contact" onclick="showPage('contact')">联系</a>
+  </nav>
+
+  <!-- 首页 -->
+  <section id="page-home" class="page active">
+    <div class="container hero">
+      <div class="avatar-placeholder">魏</div>
+      <!-- ↑ 换成你的照片：见 .avatar-placeholder 注释 -->
+      <h1>魏同学</h1>
+      <!-- ↑ 改成你的名字 -->
+      <p>一名热爱学习的学生 · 正在用代码做有趣的东西</p>
+      <!-- ↑ 改成你的一句话介绍 -->
+    </div>
+  </section>
+
+  <!-- 关于我 -->
+  <section id="page-about" class="page">
+    <div class="container">
+      <h2 class="section-title">关于我</h2>
+      <!-- 下面每一项都改成你自己的真实信息 -->
+      <ul class="about-list">
+        <li><b>专业</b>物理专业（待补充）</li>
+        <li><b>学校</b>信阳（待补充）</li>
+        <li><b>兴趣</b>编程、桌宠开发、看歌剧</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 作品 -->
+  <section id="page-works" class="page alt-bg">
+    <div class="container">
+      <h2 class="section-title">作品</h2>
+      <div class="card">
+        <!-- 截图占位：把桌宠截图命名为 pet.png 放进同目录后，把下面这行 div 替换成：
+             <img src="pet.png" alt="桌宠截图" style="width:100%;border-radius:8px;margin-bottom:14px;"> -->
+        <div class="shot-placeholder">[ 桌宠截图，替换成 pet.png ]</div>
+        <h3>芙宁娜桌宠</h3>
+        <p>用 Python + PowerShell 做的桌面宠物：会走路、会聊天、有课程表提醒，
+           还内置了芙宁娜人设和好感度系统。是我从零做的最大的一个项目。</p>
+      </div>
+      <!-- 以后有新作品，复制上面 <div class="card"> 整块再粘贴一份，改文字即可 -->
+    </div>
+  </section>
+
+  <!-- 联系 -->
+  <section id="page-contact" class="page">
+    <div class="container">
+      <h2 class="section-title">联系我</h2>
+      <div class="contact-links">
+        <!-- 把邮箱和 GitHub 换成你自己的 -->
+        <p><a href="mailto:你的邮箱@example.com">邮箱：你的邮箱@example.com</a></p>
+        <p><a href="https://github.com/你的用户名" target="_blank" rel="noopener">GitHub：github.com/你的用户名</a></p>
+        <!-- target="_blank" = 新标签页打开；rel="noopener" = 安全要求，防止新页面控制本页 -->
+      </div>
+    </div>
+  </section>
+
+  <footer>© 2026 魏同学 · 用 HTML + CSS 制作</footer>
+
+  <!-- ==================== 下面是 JS：切换页面 ==================== -->
+  <script>
+    // 函数：显示名字为 name 的页面
+    function showPage(name) {
+      // 1. 把所有 .page 元素的 active 类去掉（全部隐藏）
+      document.querySelectorAll('.page').forEach(function (p) {
+        p.classList.remove('active');
+      });
+      // 2. 给目标页面加回 active 类（显示出来）
+      document.getElementById('page-' + name).classList.add('active');
+      // 3. 导航高亮同步：把 .active 从所有链接上移除，再加到当前页链接上
+      document.querySelectorAll('nav a').forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + name);
+      });
+      // 4. 回到页面顶部，避免切页后停在半中间
+      window.scrollTo(0, 0);
+    }
+
+    // 监听地址栏 # 的变化（点导航链接就会变），变了就切页
+    window.addEventListener('hashchange', function () {
+      // location.hash 形如 "#about"，去掉 # 得到 "about"；没有则默认首页 "home"
+      var name = location.hash.slice(1) || 'home';
+      showPage(name);
+    });
+
+    // 页面刚打开时，根据地址栏有没有 # 决定显示哪页
+    showPage(location.hash.slice(1) || 'home');
+  </script>
+</body>
+</html>
