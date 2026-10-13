@@ -483,7 +483,7 @@
     <section id="page-home" class="page active">
       <div class="container">
         <div class="content-card hero">
-          <img class="avatar" src="avatar.png" alt="我的头像">
+          <img class="avatar" src="avatar.png" alt="芙宁娜头像">
           <h1>魏同学</h1>
           <p>一名热爱学习的学生，正在用代码做有趣的东西</p>
         </div>
@@ -583,12 +583,19 @@
   <script>
     // 显示名字为 name 的页面
     function showPage(name) {
+      // 0. 兜底：地址栏 # 后面如果写了不存在的页面名，
+      //    就自动回落到首页，避免找不到元素导致白屏
+      var target = document.getElementById('page-' + name);
+      if (!target) {
+        name = 'home';
+        target = document.getElementById('page-home');
+      }
       // 1. 先隐藏所有页面
       document.querySelectorAll('.page').forEach(function (p) {
         p.classList.remove('active');
       });
       // 2. 显示目标页面
-      document.getElementById('page-' + name).classList.add('active');
+      target.classList.add('active');
       // 3. 导航高亮同步
       document.querySelectorAll('nav a').forEach(function (a) {
         a.classList.toggle('active', a.getAttribute('href') === '#' + name);
