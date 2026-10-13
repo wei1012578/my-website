@@ -89,14 +89,84 @@
       border-bottom: 2px solid var(--gold);
     }
 
+    /* ============ 4.5 生日横幅：导航栏正下方的一条细长渐变横幅 ============
+       深蓝 → 金色渐变，居中白字。独立在导航下方，不遮挡导航 */
+    .birthday-banner {
+      background: linear-gradient(90deg, #1a2d5a, #d4af37); /* 深蓝渐变到金色 */
+      text-align: center;
+      padding: 9px 12px;
+      color: #ffffff;
+      font-size: 15px;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);  /* 深色阴影，金色端也清楚 */
+    }
+
     /* ============ 5. 页面区块（JS 控制显示/隐藏） ============ */
     .page {
       display: none;
       padding: 48px 20px;
       min-height: 70vh;
+      position: relative;          /* 页面专属滤镜层的定位基准 */
+      /* 每个页面都有自己的背景图：铺满 + 居中 + 固定不随滚动 */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
+    /* 各页面背景图：首页保持 bg.jpg，其他页面换新图 */
+    #page-home    { background-image: url('bg.jpg'); }
+    #page-about   { background-image: url('bg_about.jpg'); }
+    #page-works   { background-image: url('bg_works.jpg'); }
+    #page-contact { background-image: url('bg_contact.jpg'); }
     .page.active {
       display: block;
+    }
+
+    /* ---- 页面专属滤镜层：盖在背景图上、内容之下 ----
+       每个页面有自己的"舞台灯光"，
+       第一层是所有页面统一的黑遮罩（让文字清楚），
+       后面叠各页面的专属效果（暗 20% / 金色光晕 / 蓝色流光） */
+    .page::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 0;                  /* 滤镜在内容（z-index 1）下面 */
+      pointer-events: none;        /* 不挡鼠标 */
+      background: rgba(0, 0, 0, 0.4);  /* 统一遮罩：40% 黑 */
+    }
+    /* 页面内容抬到滤镜层上面 */
+    .page > .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 首页：默认，就是统一遮罩 */
+    #page-home::before {
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    /* 关于我：比首页暗 20%（遮罩加到 60% 黑） */
+    #page-about::before {
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    /* 作品：淡金色光晕遮罩（像舞台聚光灯，人物侧偏亮） */
+    #page-works::before {
+      background:
+        radial-gradient(circle at 70% 35%,
+                  rgba(212, 175, 55, 0.20),      /* 中心淡金 */
+                  rgba(212, 175, 55, 0.08) 55%,
+                  rgba(212, 175, 55, 0.03)),     /* 边缘几乎透明 */
+        rgba(0, 0, 0, 0.4);                      /* 统一黑遮罩 */
+    }
+
+    /* 联系：蓝色渐变光（像水面流光） */
+    #page-contact::before {
+      background:
+        linear-gradient(155deg,
+                  rgba(74, 123, 200, 0.28),      /* 亮蓝 */
+                  rgba(26, 45, 90, 0.18) 45%,
+                  rgba(74, 123, 200, 0.10)),     /* 淡蓝 */
+        rgba(0, 0, 0, 0.4);                      /* 统一黑遮罩 */
     }
 
     .container {
@@ -107,7 +177,7 @@
     /* ============ 6. 首页：头像 + 名字 + 简介（居中） ============ */
     .hero {
       text-align: center;
-      padding: 70px 0 40px;
+      padding: 6px 0 10px;   /* 间距由外层 content-card 提供，这里只要居中和内衬 */
     }
 
     /* 圆形头像：先用深蓝底 + 金色"魏"字代替照片。
@@ -166,7 +236,20 @@
       margin-right: 12px;
     }
 
-    /* ============ 9. 作品卡片：磨砂玻璃效果 ============
+    /* ============ 9. 内容卡片：半透明深蓝磨砂玻璃 ============
+       四个页面左侧的文字内容都包在这张卡片里，
+       文字就不会直接压在背景图上，层次感更好 */
+    .content-card {
+      background: rgba(13, 27, 64, 0.6);       /* 半透明深蓝 */
+      backdrop-filter: blur(10px);             /* 背后模糊 = 磨砂 */
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.35); /* 淡淡的金色边框 */
+      border-radius: 16px;
+      padding: 30px 26px;
+      margin-top: 20px;
+    }
+
+    /* ============ 10. 作品卡片：磨砂玻璃效果 ============
        backdrop-filter: blur(10px) 让卡片背后的背景模糊，
        background 半透明白做出"磨砂玻璃"质感 */
     .card {
@@ -227,7 +310,7 @@
     /* ============ 12. 响应式：电脑端增强（先手机后电脑） ============ */
     @media (min-width: 768px) {
       .hero {
-        padding: 100px 0 60px;
+        padding: 10px 0 20px;
       }
       .hero h1 {
         font-size: 42px;
@@ -253,51 +336,64 @@
     <a href="#contact" onclick="showPage('contact')">联系</a>
   </nav>
 
+  <!-- 生日横幅：芙宁娜生日（10月13日） -->
+  <div class="birthday-banner">✨ 10月13日 · 祝芙宁娜生日快乐 ✨</div>
+
   <main>
-    <!-- 首页：头像 + 名字 + 一句话介绍 -->
+    <!-- 首页：头像 + 名字 + 一句话介绍（内容套在半透明深蓝卡片里） -->
     <section id="page-home" class="page active">
-      <div class="container hero">
-        <div class="avatar-placeholder">魏</div>
-        <!-- ↑ 有照片后换成：<img class="avatar" src="avatar.jpg" alt="我的头像"> -->
-        <h1>魏同学</h1>
-        <p>一名热爱学习的学生，正在用代码做有趣的东西</p>
+      <div class="container">
+        <div class="content-card hero">
+          <div class="avatar-placeholder">魏</div>
+          <!-- ↑ 有照片后换成：<img class="avatar" src="avatar.jpg" alt="我的头像"> -->
+          <h1>魏同学</h1>
+          <p>一名热爱学习的学生，正在用代码做有趣的东西</p>
+        </div>
       </div>
     </section>
 
     <!-- 关于我 -->
     <section id="page-about" class="page">
       <div class="container">
-        <h2 class="section-title">关于我</h2>
-        <ul class="about-list">
-          <li><b>专业</b>物联网工程</li>
-          <li><b>学校</b>信阳（待补充）</li>
-          <li><b>兴趣</b>编程、桌宠开发、看歌剧</li>
-        </ul>
+        <div class="content-card">
+          <h2 class="section-title">关于我</h2>
+          <ul class="about-list">
+            <li><b>专业</b>物联网工程</li>
+            <li><b>学校</b>信阳（待补充）</li>
+            <li><b>兴趣</b>编程、桌宠开发、看歌剧</li>
+          </ul>
+        </div>
       </div>
     </section>
 
     <!-- 作品 -->
     <section id="page-works" class="page">
       <div class="container">
-        <h2 class="section-title">作品</h2>
-        <div class="card">
-          <img src="pet.png" alt="芙宁娜桌宠截图">
-          <!-- ↑ 桌宠图：想换图就把同名图片覆盖 pet.png，或改这里的文件名 -->
-          <h3>芙宁娜桌宠</h3>
-          <p>用 Python + PowerShell 做的桌面宠物：会走路、会聊天、有课程表提醒，
-             还内置了芙宁娜人设和好感度系统。是我从零做的最大的一个项目。</p>
+        <div class="content-card">
+          <h2 class="section-title">作品</h2>
+          <div class="card">
+            <img src="pet.png" alt="芙宁娜桌宠截图">
+            <!-- ↑ 桌宠图：想换图就把同名图片覆盖 pet.png，或改这里的文件名 -->
+            <h3>芙宁娜桌宠</h3>
+            <p>用 Python + PowerShell 从零做的桌面小芙宁娜：会在桌面上自由散步、跳跃，
+               会睡觉、吃饭、工作，还有 15+ 种表情；连上 AI 后用芙宁娜的语气陪你聊天，
+               自带好感度系统和长期记忆；还会提醒你上课、喝水、专注休息。
+               是我从零做的最大的一个项目。</p>
+          </div>
+          <!-- 以后有新作品：复制上面 <div class="card"> 整块，粘贴一份改文字即可 -->
         </div>
-        <!-- 以后有新作品：复制上面 <div class="card"> 整块，粘贴一份改文字即可 -->
       </div>
     </section>
 
     <!-- 联系 -->
     <section id="page-contact" class="page">
       <div class="container">
-        <h2 class="section-title">联系我</h2>
-        <div class="contact-links">
-          <p><a href="mailto:你的邮箱@example.com">邮箱：你的邮箱@example.com</a></p>
-          <p><a href="https://github.com/wei1012578" target="_blank" rel="noopener">GitHub：github.com/wei1012578</a></p>
+        <div class="content-card">
+          <h2 class="section-title">联系我</h2>
+          <div class="contact-links">
+            <p><a href="mailto:你的邮箱@example.com">邮箱：你的邮箱@example.com</a></p>
+            <p><a href="https://github.com/wei1012578" target="_blank" rel="noopener">GitHub：github.com/wei1012578</a></p>
+          </div>
         </div>
       </div>
     </section>
