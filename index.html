@@ -28,11 +28,19 @@
       box-sizing: border-box;
     }
 
+    /* ============ 2.5 页面底色：深蓝兜底 ============
+       任何背景图没盖到的地方（如边缘、加载中）都用深蓝，
+       不会露出浏览器默认的白色/浅灰色块 */
+    html {
+      background-color: #0d1b40;
+    }
+
     /* ============ 3. 背景：芙宁娜立绘铺满全屏，不随滚动 ============
        background-attachment: fixed 让背景固定不动，
        内容滚动时背景像"舞台幕布"一样钉在屏幕上 */
     body {
       font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      background-color: #0d1b40;             /* 深蓝底色兜底（防露浅灰） */
       background-image: url('bg.jpg');   /* 背景图：芙宁娜在右侧，左侧留白放内容 */
       background-size: cover;            /* 铺满整个屏幕，超出部分自动裁掉 */
       background-position: center;       /* 居中 */
@@ -41,19 +49,41 @@
       line-height: 1.7;
     }
 
-    /* 背景遮罩层：盖在背景图上、内容底下，防止文字看不清 */
-    .overlay {
-      position: fixed;                   /* 铺满全屏、不滚动 */
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--mask);           /* 半透明黑色 */
-      z-index: 0;                        /* 在内容（z-index 1）下面 */
-      pointer-events: none;              /* 不挡鼠标点击 */
-    }
-
-    /* 所有内容放在遮罩上面一层 */
+    /* 所有内容放在背景上面一层 */
     main {
       position: relative;
       z-index: 1;
+    }
+
+    /* ============ 3.5 滚动条美化：金色细条 + 透明轨道 ============
+       内容变长出现滚动时，默认的浅灰滚动条轨道换成透明，
+       滑块用半透明金色细条，和芙宁娜主题搭配 */
+    /* Chrome / Edge / Safari */
+    ::-webkit-scrollbar {
+      width: 6px;               /* 细条 */
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d1b40;     /* 轨道用深蓝实色兜底：任何浏览器都不会露出浅灰 */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.55);   /* 半透明金 */
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(212, 175, 55, 0.85);   /* 悬停加深 */
+    }
+    ::-webkit-scrollbar-button {
+      height: 0;                /* 去掉上下箭头按钮 */
+      width: 0;
+    }
+    ::-webkit-scrollbar-corner {
+      background: #0d1b40;     /* 角落也深蓝，不留浅灰 */
+    }
+    /* Firefox */
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(212, 175, 55, 0.55) #0d1b40;
     }
 
     /* ============ 4. 顶部导航：半透明深蓝 + 白字 + 悬停金线 ============ */
@@ -105,7 +135,7 @@
     .page {
       display: none;
       padding: 48px 20px;
-      min-height: 70vh;
+      min-height: 100vh;         /* 每个页面至少占满一屏，背景图才不会在下方露边 */
       position: relative;          /* 页面专属滤镜层的定位基准 */
       /* 每个页面都有自己的背景图：铺满 + 居中 + 固定不随滚动 */
       background-size: cover;
@@ -171,7 +201,18 @@
 
     .container {
       max-width: 720px;
+      width: 100%;
       margin: 0 auto;
+    }
+
+    /* 电脑端：内容区收窄到屏幕左侧约 40% 宽度，靠左对齐，
+       给右侧背景的芙宁娜留出完整画面 */
+    @media (min-width: 768px) {
+      .container {
+        width: 40%;
+        margin-left: 24px;   /* 左边距小一点，卡片靠左 */
+        margin-right: auto;
+      }
     }
 
     /* ============ 6. 首页：头像 + 名字 + 简介（居中） ============ */
@@ -325,9 +366,6 @@
   </style>
 </head>
 <body>
-  <!-- 背景遮罩层：让背景上的文字清楚 -->
-  <div class="overlay"></div>
-
   <!-- 顶部导航：href 让地址栏带锚点，onclick 直接切页（详见底部 JS） -->
   <nav>
     <a href="#home" class="active" onclick="showPage('home')">首页</a>
