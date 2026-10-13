@@ -284,13 +284,24 @@
     .skill-row {
       display: flex;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+    }
+    /* 技能名 + 备注：上下两行，备注字小一点、淡一点 */
+    .skill-label {
+      width: 132px;               /* 固定宽度，避免备注挤进度条 */
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
     }
     .skill-name {
-      width: 84px;
       font-size: 14px;
       color: var(--water-blue);
-      flex-shrink: 0;
+      font-weight: 600;
+    }
+    .skill-note {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.55);   /* 淡一点的小备注 */
     }
     .skill-bar {
       flex: 1;                            /* 占满剩余宽度 */
@@ -496,19 +507,28 @@
           <h3 class="sub-title">我的技能</h3>
           <div class="skills">
             <div class="skill-row">
-              <span class="skill-name">C语言</span>
-              <div class="skill-bar"><div class="skill-fill skill-c" style="width:30%"></div></div>
-              <span class="skill-pct">30%</span>
+              <div class="skill-label">
+                <span class="skill-name">C语言</span>
+                <span class="skill-note">学到 for 循环</span>
+              </div>
+              <div class="skill-bar"><div class="skill-fill skill-c" style="width:5%"></div></div>
+              <span class="skill-pct">5%</span>
             </div>
             <div class="skill-row">
-              <span class="skill-name">Python</span>
-              <div class="skill-bar"><div class="skill-fill skill-py" style="width:50%"></div></div>
-              <span class="skill-pct">50%</span>
+              <div class="skill-label">
+                <span class="skill-name">Python</span>
+                <span class="skill-note">会简单数学计算</span>
+              </div>
+              <div class="skill-bar"><div class="skill-fill skill-py" style="width:10%"></div></div>
+              <span class="skill-pct">10%</span>
             </div>
             <div class="skill-row">
-              <span class="skill-name">HTML/CSS</span>
-              <div class="skill-bar"><div class="skill-fill skill-html" style="width:20%"></div></div>
-              <span class="skill-pct">20%</span>
+              <div class="skill-label">
+                <span class="skill-name">HTML/CSS</span>
+                <span class="skill-note">0基础，靠 AI 建站</span>
+              </div>
+              <div class="skill-bar"><div class="skill-fill skill-html" style="width:0%"></div></div>
+              <span class="skill-pct">0%</span>
             </div>
           </div>
 
